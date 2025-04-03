@@ -85,7 +85,37 @@ app.use(express.json({
   }
 }));
 app.use((req, res, next) => {
-  logger.info(`${req.method} ${req.url}`);
+  if (process.env.NODE_ENV === 'development') {
+    const sanitizedHeaders = {...req.headers};
+    if (sanitizedHeaders.authorization) {
+      sanitizedHeaders.authorization = 'REDACTED';
+    }
+    
+    logger.info('Incoming Request', {
+      method: req.method,
+      url: req.url,
+      headers: sanitizedHeaders,
+      query: req.query,
+      body: req.body?.model ? {
+        model: req.body.model,
+        temperature: req.body.temperature,
+        stream: req.body.stream
+      } : undefined
+    });
+    
+    const startTime = Date.now();
+    const originalSend = res.send;
+    res.send = function(body) {
+      logger.info('Outgoing Response', {
+        status: res.statusCode,
+        duration: `${Date.now() - startTime}ms`,
+        headers: res.getHeaders(),
+        body: typeof body === 'string' && body.length > 1000 ?
+          `${body.substring(0, 1000)}...` : body
+      });
+      return originalSend.apply(res, arguments);
+    };
+  }
   next();
 });
 
@@ -159,9 +189,19 @@ app.post('/v1/chat/completions', async (req, res) => {
           }
 
           // Forward request to OpenRouter
+          const requestBody = req.body;
+          if (process.env.NODE_ENV === 'development') {
+            logger.debug('Forwarding to OpenRouter', {
+              url: 'https://openrouter.ai/api/v1/chat/completions',
+              body: requestBody,
+              temperature: requestBody.temperature,
+              model: requestBody.model
+            });
+          }
+          
           const response = await axios.post(
             'https://openrouter.ai/api/v1/chat/completions',
-            req.body,
+            requestBody,
             config
           );
 
