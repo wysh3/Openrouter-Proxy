@@ -24,14 +24,14 @@ npm install
 ```bash
 npm run setup
 ```
-Follow the interactive prompts to add your OpenRouter API keys. Keys are validated and stored in `data/keys.json`
+> Follow the interactive prompts to add your OpenRouter API keys. Keys are validated and stored in `data/keys.json`
 
 4. Start the server:
 ```bash
 npm start
 ```
 
-# For development (auto-restart on changes)
+### Only for development (auto-restart on changes)
 ```bash
 npm run dev
 ```
@@ -39,7 +39,9 @@ npm run dev
 ## API Usage
 
 Base endpoint : `http://localhost:3000/v1`
+
 api key : `dummy-key`
+
 model (any model specified on openrouter) for example : `google/gemini-2.5-pro-exp-03-25:free` 
 
 ## Configuration
