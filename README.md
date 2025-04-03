@@ -7,31 +7,40 @@
 - Rate limit handling
 - Performance metrics
 
-## Server Modes
+## Installation
 
-### Development
+1. Clone the repository:
 ```bash
-npm run dev
+git clone https://github.com/wysh3/openrouter-proxy.git
+cd openrouter-proxy
 ```
-- Uses nodemon for automatic restart on file changes
-- More verbose logging
-- Debug tools enabled
 
-### Production
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Set up your API keys:
+```bash
+npm run setup
+```
+Follow the interactive prompts to add your OpenRouter API keys. Keys are validated and stored in `data/keys.json`
+
+4. Start the server:
 ```bash
 npm start
 ```
-- Optimized for performance
-- Minimal logging
-- Better error handling
 
-## Setup
-1. Install dependencies: `npm install`
-2. Run the setup utility: `npm run setup`
-   - This will guide you through adding API keys interactively
-   - Keys are validated and stored in `data/keys.json`
-3. Start development server: `npm run dev`
-4. Start production server: `npm start`
+# For development (auto-restart on changes)
+```bash
+npm run dev
+```
+
+## API Usage
+
+Base endpoint : `http://localhost:3000/v1`
+api key : `dummy-key`
+model (any model specified on openrouter) for example : `google/gemini-2.5-pro-exp-03-25:free` 
 
 ## Configuration
 - Add multiple API keys to `data/keys.json` for load balancing
