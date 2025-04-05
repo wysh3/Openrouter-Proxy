@@ -171,17 +171,11 @@ app.post('/v1/chat/completions', async (req, res) => {
               'HTTP-Referer': req.headers['http-referer'] || 'http://localhost:3000',
               'X-Title': req.headers['x-title'] || 'OpenRouter Proxy'
             },
-            timeout: 30000,
-            httpsAgent: ConnectionPool.getAgent('api.openrouter.ai').setMaxListeners(100),
+            timeout: 30000, // Request timeout
+            httpsAgent: ConnectionPool.getAgent('api.openrouter.ai').setMaxListeners(100), // Use connection pool for HTTPS
             socketPath: undefined,
-            timeout: 30000,
-            httpAgent: new http.Agent({
-              keepAlive: true,
-              keepAliveMsecs: 60000,
-              maxSockets: 50,
-              maxFreeSockets: 10
-            }),
-            signal: abortController.signal
+            // httpAgent is not needed for HTTPS requests
+            signal: abortController.signal // Abort signal integration
           };
 
           if (isStreaming) {
@@ -213,10 +207,12 @@ app.post('/v1/chat/completions', async (req, res) => {
             });
 
             response.data.on('error', (err) => {
-              logger.error('Stream error', {
+
+              logger.error('Stream error encountered', {
                 model,
                 error: err.message,
-                stack: err.stack
+                stack: err.stack,
+                external_note: 'Check for known issues with OpenRouter/model provider if persistent.'
               });
               if (!res.headersSent) {
                 res.status(500).json({ error: 'Stream error occurred' });
